@@ -101,6 +101,7 @@ def main(args):
 
     device = torch.device(args.device)
 
+    #Get Train - Test dataset
     dataset, num_classes = get_dataset(args.data_path, args.dataset, "train", get_transform(train=True))
     dataset_test, _ = get_dataset(args.data_path, args.dataset, "val", get_transform(train=False))
 
@@ -111,6 +112,7 @@ def main(args):
         train_sampler = torch.utils.data.RandomSampler(dataset)
         test_sampler = torch.utils.data.SequentialSampler(dataset_test)
 
+    # Move to data_loader by torch.utils.data.DataLoader
     data_loader = torch.utils.data.DataLoader(
         dataset, batch_size=args.batch_size,
         sampler=train_sampler, num_workers=args.workers,
