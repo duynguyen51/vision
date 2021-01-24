@@ -108,8 +108,8 @@ def main(args):
     #Get Train - Test dataset
     #dataset, num_classes = get_dataset(args.data_path, args.dataset, "train", get_transform(train=True))
     #dataset_test, _ = get_dataset(args.data_path, args.dataset, "val", get_transform(train=False))
-    dataset = get_dataset_msra(img_dir=os.path.join(args.data_path,'train/origin'),label_dir=os.path.join(args.data_path,'train/mask'), transform(train=True))
-    dataset_test = get_dataset_msra(img_dir=os.path.join(args.data_path,'test/origin'),label_dir=os.path.join(args.data_path,'test/mask'), transform(train=False))
+    dataset = get_dataset_msra(img_dir=os.path.join(args.data_path,'train/origin'),label_dir=os.path.join(args.data_path,'train/mask'), get_transform(train=True))
+    dataset_test = get_dataset_msra(img_dir=os.path.join(args.data_path,'test/origin'),label_dir=os.path.join(args.data_path,'test/mask'), get_transform(train=False))
 
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(dataset)
