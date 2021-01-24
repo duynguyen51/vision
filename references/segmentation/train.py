@@ -11,6 +11,7 @@ from coco_utils import get_coco
 import transforms as T
 import utils
 
+from dataset import MSRA_B
 
 def get_dataset(dir_path, name, image_set, transform):
     def sbd(*args, **kwargs):
@@ -25,6 +26,8 @@ def get_dataset(dir_path, name, image_set, transform):
     ds = ds_fn(p, image_set=image_set, transforms=transform)
     return ds, num_classes
 
+def get_dataset_msra(img_dir, label_dir, transform):
+    return MSRA_B(img_root=img_dir, label_root=label_dir, transform=transform, t_transform=transform), 1
 
 def get_transform(train):
     base_size = 520
@@ -101,9 +104,12 @@ def main(args):
 
     device = torch.device(args.device)
 
+    num_classes = 1
     #Get Train - Test dataset
-    dataset, num_classes = get_dataset(args.data_path, args.dataset, "train", get_transform(train=True))
-    dataset_test, _ = get_dataset(args.data_path, args.dataset, "val", get_transform(train=False))
+    #dataset, num_classes = get_dataset(args.data_path, args.dataset, "train", get_transform(train=True))
+    #dataset_test, _ = get_dataset(args.data_path, args.dataset, "val", get_transform(train=False))
+    dataset = get_dataset_msra(img_dir=os.path.join(args.data_path,'train/origin'),label_dir=os.path.join(args.data_path,'train/mask'), transform(train=True))
+    dataset_test = get_dataset_msra(img_dir=os.path.join(args.data_path,'test/origin'),label_dir=os.path.join(args.data_path,'test/mask'), transform(train=False))
 
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(dataset)

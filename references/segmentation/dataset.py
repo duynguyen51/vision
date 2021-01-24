@@ -6,7 +6,7 @@ from torch.utils import data
 from torchvision import transforms
 
 
-class ImageData(data.Dataset):
+class MSRA_B(data.Dataset):
     """ image dataset
     img_root:    image root (root which contain images)
     label_root:  label root (root which contains labels)
