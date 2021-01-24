@@ -24,7 +24,8 @@ class MSRA_B(data.Dataset):
             lines = [line.rstrip('\n')[:-3] for line in open(filename)]
             self.image_path = list(map(lambda x: os.path.join(img_root, x + 'jpg'), lines))
             self.label_path = list(map(lambda x: os.path.join(label_root, x + 'png'), lines))
-
+        print('List origin', self.image_path, len(self.image_path))
+        print('List test', self.label_path, len(self.label_path))
         self.transform = transform
         self.t_transform = t_transform
 
@@ -32,9 +33,9 @@ class MSRA_B(data.Dataset):
         image = Image.open(self.image_path[item])
         label = Image.open(self.label_path[item]).convert('L')
         if self.transform is not None:
-            image = self.transform(image)
-        if self.t_transform is not None:
-            label = self.t_transform(label)
+            image, label = self.transform(image, label)
+        #if self.t_transform is not None:
+        #    label = self.t_transform(label)
         return image, label
 
     def __len__(self):

@@ -27,7 +27,7 @@ def get_dataset(dir_path, name, image_set, transform):
     return ds, num_classes
 
 def get_dataset_msra(img_dir, label_dir, transform):
-    return MSRA_B(img_root=img_dir, label_root=label_dir, transform=transform, t_transform=transform), 1
+    return MSRA_B(img_root=img_dir, label_root=label_dir, transform=transform, t_transform=transform)
 
 def get_transform(train):
     base_size = 520
@@ -108,8 +108,8 @@ def main(args):
     #Get Train - Test dataset
     #dataset, num_classes = get_dataset(args.data_path, args.dataset, "train", get_transform(train=True))
     #dataset_test, _ = get_dataset(args.data_path, args.dataset, "val", get_transform(train=False))
-    dataset = get_dataset_msra(img_dir=os.path.join(args.data_path,'train/origin'),label_dir=os.path.join(args.data_path,'train/mask'), get_transform(train=True))
-    dataset_test = get_dataset_msra(img_dir=os.path.join(args.data_path,'test/origin'),label_dir=os.path.join(args.data_path,'test/mask'), get_transform(train=False))
+    dataset = get_dataset_msra(img_dir=os.path.join(args.data_path,'train/origin'),label_dir=os.path.join(args.data_path,'train/mask'), transform = get_transform(train=True))
+    dataset_test = get_dataset_msra(img_dir=os.path.join(args.data_path,'test/origin'),label_dir=os.path.join(args.data_path,'test/mask'), transform = get_transform(train=False))
 
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(dataset)
@@ -117,7 +117,7 @@ def main(args):
     else:
         train_sampler = torch.utils.data.RandomSampler(dataset)
         test_sampler = torch.utils.data.SequentialSampler(dataset_test)
-
+    print('Len Dataset',len(dataset))
     # Move to data_loader by torch.utils.data.DataLoader
     data_loader = torch.utils.data.DataLoader(
         dataset, batch_size=args.batch_size,
@@ -174,6 +174,7 @@ def main(args):
             train_sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, optimizer, data_loader, lr_scheduler, device, epoch, args.print_freq)
         confmat = evaluate(model, data_loader_test, device=device, num_classes=num_classes)
+        torch.save(model.state_dict())
         print(confmat)
         utils.save_on_master(
             {
